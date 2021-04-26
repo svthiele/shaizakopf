@@ -2,23 +2,18 @@ const cardVals = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "B", "D", "K", "
 // const cardSuits = ["Karo", "Herz", "Pik", "Kreuz"];
 const cardSymbols = ["♢", "♡", "♠", "♣"];
 
-class PlayingCard {
+const cardImgValue = ['2','3','4','5','6','7','8','9', 'T', 'J', 'Q', 'K', 'A'];
+const cardImgSuits = ['D', 'H', 'S', 'C'];
+
+
+class CardRank {
   constructor(suit, value) {
     this.suit = suit; // 0 -3 = Karo, Herz, Pick, Kreuz
     this.value = value; // 0 - 12 = 2 - Ass
-    this.flipped = false;
-    this.xPos = 0;
-    this.yPos = 0;
-    this.player = 4; // 4 = no player
-    this.div;
-
   }
 
-  get cardName() {
-    let suitSym = this.cardSuit;
-    let valName = this.cardValue;
-
-    return suitSym + valName;
+  get cardIMG() {
+    return 'data/cards/' + cardImgValue[this.value] + cardImgSuits[this.suit] + '.svg'
   }
 
   get cardSuit() {
@@ -49,39 +44,6 @@ class PlayingCard {
         break;
     }
     return points;
-  }
-
-  get inHand() {
-    var inHand = false;
-    for (var i = 0; i < players[this.player].hand.cards.length; i++) {
-      if (players[this.player].hand.cards[i] === this) {
-        inHand = true;
-      }
-    }
-    return inHand;
-  }
-
-  display() {
-    if (this.flipped) {
-      this.div.html(cardImgs[this.suit][this.value - 7][1])
-    } else {
-      this.div.html(cardBackImg[1])
-    }
-
-    this.div.size(cardW, cardH);
-    this.div.position(this.xPos - cardW / 2, this.yPos - cardH / 2);
-  }
-
-  remove() {
-    this.div.remove();
-  }
-
-  get mouseOver() {
-    var left = this.xPos - (cardW / 2);
-    var right = this.xPos + (cardW / 2);
-    var top = this.yPos - (cardH / 2);
-    var bottom = this.yPos + (cardH / 2);
-    return (mouseX > left && mouseX < right && mouseY < bottom && mouseY > top)
   }
 
   isTrump() {
@@ -118,6 +80,60 @@ class PlayingCard {
 
   get karlchen() {
     return (this.value == 9 && this.suit == 3);
+  }
+}
+
+class PlayingCard extends CardRank {
+  constructor(suit, value) {
+    super(suit, value);
+    this.flipped = false;
+    this.xPos = 0;
+    this.yPos = 0;
+    this.player = 4; // 4 = no player
+    //this.initDiv();
+  }
+
+  initDiv() {
+    let card = this;
+    this.div = document.createElement('img');
+    this.div.className = 'card';
+    this.div.src = this.cardIMG;
+    this.div.style.position = 'absolute';
+    this.div.style.width = Math.floor(cardW) + '.px';
+    this.div.style.height = Math.floor(cardH) + '.px';
+    this.div.addEventListener('click', function() {
+      legalMove(card);
+    });
+
+    document.body.appendChild(this.div);
+  }
+
+  get inHand() {
+    var inHand = false;
+    for (var i = 0; i < players[this.player].hand.cards.length; i++) {
+      if (players[this.player].hand.cards[i] === this) {
+        inHand = true;
+      }
+    }
+    return inHand;
+  }
+
+  display() {
+    if (this.flipped) {
+      this.div.src = this.cardIMG;
+      //this.div.innerHTML = cardImgs[this.suit][this.value - 7][1];
+    } else {
+      this.div.src = 'data/cards/1B.svg';
+
+      //this.div.innerHTML = cardBackImg[1];
+    }
+
+    this.div.style.left = Math.round(this.xPos - cardW / 2) + '.px';
+    this.div.style.top = Math.round(this.yPos - cardH / 2) + '.px';
+  }
+
+  remove() {
+    this.div.remove();
   }
 }
 
@@ -169,9 +185,9 @@ class Deck {
     for (let i = numCards - 1; i >= 0; i--) {
       deck.cards[i].player = currHand;
       players[currHand].hand.add(deck.cards[i]); // add the top cards to the current hand
-      //if (currHand == me) {
+      if (currHand == me) {
       deck.cards[i].flipped = true;
-      //}
+      }
       deck.cards.splice(i, 1); // and remove it from the pile
 
       currHand = (currHand + 1) % playerCount;
@@ -201,14 +217,12 @@ class Hand {
   }
 
   display(pos) { // position unten = 0, links = 1, oben = 2, rechts = 3
-    const marginX = (width - (cardW + ((this.cards.length - 1) * cardW * 0.6))) / 2;
-    const marginY = (height - (cardH + ((this.cards.length - 1) * cardH * 0.4))) / 2;
-    //const cardW = (width - (marginX * 2)) / this.cards.length;
-    //const cardH = (height - (marginY * 2)) / this.cards.length;
+    const marginX = (innerWidth - (cardW + ((this.cards.length - 1) * cardW * 0.6))) / 2;
+    const marginY = (innerHeight - (cardH + ((this.cards.length - 1) * cardH * 0.4))) / 2;
     for (let i = 0; i < this.cards.length; i++) {
 
       if (pos == 0) { //bottom
-        var y = height - (cardH * 0.6);
+        var y = innerHeight - (cardH * 0.6);
         var x = (i * cardW * 0.6) + marginX + (cardW / 2);
       }
 
@@ -223,7 +237,7 @@ class Hand {
       }
 
       if (pos == 3) { //right
-        var x = width - (cardW * 0.75);
+        var x = innerWidth - (cardW * 0.75);
         var y = (i * cardH * 0.4) + marginY + (cardH / 2);
 
       }
@@ -281,20 +295,20 @@ class Stich {
         var y;
         switch (displayPos((i + this.first) % 4)) {
           case 0:
-            x = width / 2;
-            y = height / 2 + (cardH * 0.75);
+            x = innerWidth / 2;
+            y = innerHeight / 2 + (cardH * 0.75);
             break;
           case 1:
-            x = width / 2 - (cardW * 0.75);
-            y = height / 2;
+            x = innerWidth / 2 - (cardW * 0.75);
+            y = innerHeight / 2;
             break;
           case 2:
-            x = width / 2;
-            y = height / 2 - (cardH * 0.75);
+            x = innerWidth / 2;
+            y = innerHeight / 2 - (cardH * 0.75);
             break;
           case 3:
-            x = width / 2 + (cardW * 0.75);
-            y = height / 2;
+            x = innerWidth / 2 + (cardW * 0.75);
+            y = innerHeight / 2;
             break;
         }
 
@@ -315,20 +329,20 @@ class Stich {
     var y;
     switch (displayPos(this.winner)) {
       case 0:
-        x = width * 0.75;
-        y = height - cardH * 2;
+        x = innerWidth * 0.75;
+        y = innerHeight - cardH * 2;
         break;
       case 1:
         x = cardW * 2;
-        y = height * 0.75;
+        y = innerHeight * 0.75;
         break;
       case 2:
-        x = width * 0.25;
+        x = innerWidth * 0.25;
         y = cardH * 2;
         break;
       case 3:
-        x = width - (cardW * 2);
-        y = height * 0.25;
+        x = innerWidth - (cardW * 2);
+        y = innerHeight * 0.25;
         break;
     }
 
@@ -365,20 +379,80 @@ class Stich {
 
 
 class Player {
-  constructor(name) {
-    //this.num = num;
+  constructor(num, name) {
+    this.num = num;
     this.hand = new Hand;
     this.team = -1; // 0 = re 1 = kontra
-    this.pos = 0;
+    this.pos = displayPos(this.num);
     this.name = name;
-    this.stats;
     this.points = 0;
     this.gamePoints = 0;
     this.ansagen = 0;
+    this.stiche = [];
+    this.initDiv();
   }
 
   display() {
     this.hand.display(this.pos);
+  }
+
+  initDiv() {
+    var left = 0;
+    var top = 0;
+
+    this.stats = document.createElement('div');
+    document.body.appendChild(this.stats);
+
+    this.stats.style.position = 'absolute';
+    this.stats.className = 'stats';
+
+    switch (displayPos(this.num)) {
+      case 0:
+        left = '50%'; //width / 2;
+        top = '75%'; //height * 0.75;
+        break
+      case 1:
+        left = '25%'; //width * 0.25;
+        top = '50%'; //height / 2;
+        break
+      case 2:
+        left = '50%'; //width / 2;
+        top = '25%'; //height * 0.25;
+        break
+      case 3:
+        left = '75%'; //width * 0.75;
+        top = '50%'; //height / 2;
+        break
+    }
+
+    this.stats.style.top = top;
+    this.stats.style.left = left;
+
+  }
+
+  showStats() {
+    this.stats.innerHTML = this.name;
+    //players[i].stats.html(": " + players[i].points, true);
+    this.stats.innerHTML += '<br>';
+    if (this.ansagen > 0) {
+      if (this.team == 0) {
+        this.stats.innerHTML += "Re";
+      } else {
+        this.stats.innerHTML += "Kontra";
+      }
+    }
+    if (this.ansagen >= 2 && this.ansagen < 5) {
+      var ansage = 90 - ((this.ansagen - 2) * 30);
+      this.stats.innerHTML += " keine " + String(ansage);
+    }
+    if (this.ansagen == 5) {
+      this.stats.innerHTML += " schwarz";
+    }
+    if (whoseturn == this.num) {
+      this.stats.className = 'activeStats';
+    } else {
+      this.stats.className = 'stats';
+    }
   }
 }
 

@@ -14,6 +14,7 @@
 	<script src="libraries/cards.js"></script>
 	<script src="libraries/rules.js"></script>
 	<script src="libraries/gui.js"></script>
+
 	<script src="sketch.js"></script>
 
 	<style>
@@ -21,7 +22,27 @@
 			overflow: hidden;
 			margin: 0px;
 			background-color: darkgreen;
-			/* Hide scrollbars */
+		}
+
+		.card:hover {
+			filter: brightness(85%)
+		}
+
+		.card {
+			filter: drop-shadow(5px, 5px, 5px, black);
+			filter: brightness(100%)
+		}
+
+		.stats {
+			font-family: Monaco;
+			padding: 5px;
+			background-color: rgba(255, 255, 255, 0.5);
+		}
+
+		.activeStats {
+			font-family: Monaco;
+			padding: 5px;
+			background-color: rgba(255, 255, 255, 0.75);
 		}
 	</style>
 </head>
