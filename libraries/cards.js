@@ -1,8 +1,7 @@
 const cardVals = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "B", "D", "K", "A"];
-// const cardSuits = ["Karo", "Herz", "Pik", "Kreuz"];
 const cardSymbols = ["♢", "♡", "♠", "♣"];
 
-const cardImgValue = ['2','3','4','5','6','7','8','9', 'T', 'J', 'Q', 'K', 'A'];
+const cardImgValue = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
 const cardImgSuits = ['D', 'H', 'S', 'C'];
 
 
@@ -47,7 +46,7 @@ class CardRank {
   }
 
   isTrump() {
-    return (this.sortPos() > 10); //nur im Standard Spiel
+    return (this.sortPos() > trumpIndex); //nur im Standard Spiel
   }
 
   sortPos() {
@@ -96,7 +95,11 @@ class PlayingCard extends CardRank {
   initDiv() {
     let card = this;
     this.div = document.createElement('img');
-    this.div.className = 'card';
+    if (this.player == me) {
+      this.div.className = 'mycard';
+    } else {
+      this.div.className = 'card';
+    }
     this.div.src = this.cardIMG;
     this.div.style.position = 'absolute';
     this.div.style.width = Math.floor(cardW) + '.px';
@@ -127,7 +130,6 @@ class PlayingCard extends CardRank {
 
       //this.div.innerHTML = cardBackImg[1];
     }
-
     this.div.style.left = Math.round(this.xPos - cardW / 2) + '.px';
     this.div.style.top = Math.round(this.yPos - cardH / 2) + '.px';
   }
@@ -185,11 +187,11 @@ class Deck {
     for (let i = numCards - 1; i >= 0; i--) {
       deck.cards[i].player = currHand;
       players[currHand].hand.add(deck.cards[i]); // add the top cards to the current hand
-      if (currHand == me) {
-      deck.cards[i].flipped = true;
-      }
+      //if (currHand == me) {
+        deck.cards[i].flipped = true;
+      //}
+      deck.cards[i].initDiv();
       deck.cards.splice(i, 1); // and remove it from the pile
-
       currHand = (currHand + 1) % playerCount;
     }
   }
@@ -204,12 +206,15 @@ class Hand {
     this.cards.push(newCard);
   }
 
-  sort() {
+  sort(order) {
     var tmpHand = [];
-    for (let c = 0; c < sort.length; c++) {
+    let counter = 0;
+    for (let c = 0; c < order.length; c++) {
       for (var i = 0; i < this.cards.length; i++) {
-        if ((this.cards[i].suit == sort[c].suit) && (this.cards[i].value == sort[c].value)) {
+        if ((this.cards[i].suit == order[c].suit) && (this.cards[i].value == order[c].value)) {
+          this.cards[i].div.style.zIndex = counter;
           tmpHand.push(this.cards[i]);
+          counter++;
         }
       }
     }
@@ -272,6 +277,16 @@ class Hand {
       }
     }
     return result;
+  }
+
+  get trumpCount() {
+    var trumps = 0;
+    for (let card of this.cards) {
+      if (card.isTrump()) {
+        trumps += 1;
+      }
+    }
+    return trumps;
   }
 
   get count() {
@@ -375,97 +390,4 @@ class Stich {
     }
     return points
   }
-}
-
-
-class Player {
-  constructor(num, name) {
-    this.num = num;
-    this.hand = new Hand;
-    this.team = -1; // 0 = re 1 = kontra
-    this.pos = displayPos(this.num);
-    this.name = name;
-    this.points = 0;
-    this.gamePoints = 0;
-    this.ansagen = 0;
-    this.stiche = [];
-    this.initDiv();
-  }
-
-  display() {
-    this.hand.display(this.pos);
-  }
-
-  initDiv() {
-    var left = 0;
-    var top = 0;
-
-    this.stats = document.createElement('div');
-    document.body.appendChild(this.stats);
-
-    this.stats.style.position = 'absolute';
-    this.stats.className = 'stats';
-
-    switch (displayPos(this.num)) {
-      case 0:
-        left = '50%'; //width / 2;
-        top = '75%'; //height * 0.75;
-        break
-      case 1:
-        left = '25%'; //width * 0.25;
-        top = '50%'; //height / 2;
-        break
-      case 2:
-        left = '50%'; //width / 2;
-        top = '25%'; //height * 0.25;
-        break
-      case 3:
-        left = '75%'; //width * 0.75;
-        top = '50%'; //height / 2;
-        break
-    }
-
-    this.stats.style.top = top;
-    this.stats.style.left = left;
-
-  }
-
-  showStats() {
-    this.stats.innerHTML = this.name;
-    //players[i].stats.html(": " + players[i].points, true);
-    this.stats.innerHTML += '<br>';
-    if (this.ansagen > 0) {
-      if (this.team == 0) {
-        this.stats.innerHTML += "Re";
-      } else {
-        this.stats.innerHTML += "Kontra";
-      }
-    }
-    if (this.ansagen >= 2 && this.ansagen < 5) {
-      var ansage = 90 - ((this.ansagen - 2) * 30);
-      this.stats.innerHTML += " keine " + String(ansage);
-    }
-    if (this.ansagen == 5) {
-      this.stats.innerHTML += " schwarz";
-    }
-    if (whoseturn == this.num) {
-      this.stats.className = 'activeStats';
-    } else {
-      this.stats.className = 'stats';
-    }
-  }
-}
-
-class Team {
-  constructor(team) {
-    this.team = team; // 0 = re, 1 = Kontra
-    this.ansagen = 0; // re/konta = 1, keine 9 = 2, keine 6 = 3, keine 3 = 4, schwarz = 5
-    this.players = [];
-    this.points = 0;
-    this.sonderpunkte = [];
-  }
-}
-
-function displayPos(num) {
-  return wrapIndex(num - me, 4);
 }

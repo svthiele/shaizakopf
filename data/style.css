@@ -1,0 +1,116 @@
+.field {
+  width: 100%;
+  min-height: 100vh;
+  display: grid;
+  grid-template-areas:
+    'left top right'
+    'left center right'
+    'left bottom right';
+  grid-template-columns: 200px 1fr 200px;
+  grid-template-rows: 200px 1fr 200px;
+}
+
+.top {
+  grid-area: top;
+  background: steelblue;
+}
+
+.right {
+  grid-area: right;
+  background: tomato;
+}
+
+.bottom {
+  grid-area: bottom;
+  background: limegreen;
+}
+
+.left {
+  grid-area: left;
+  background: teal;
+}
+
+body {
+  overflow: hidden;
+  margin: 0px;
+  background: linear-gradient(to bottom, rgba(4, 52, 6, 1), rgba(5, 93, 9, 1));
+  font-family: Arial;
+  height: 100vh;
+}
+
+h1 {
+  text-align: center;
+  font-family: Arial;
+}
+
+.button, .winbutton {
+  border: none;
+  background: rgba(255, 255, 10, 0.5);
+  padding: 5px;
+}
+
+.winbutton {
+  position: relative;
+  margin: 10px auto;
+  display: block;
+}
+
+button:hover {
+  background: rgba(255, 255, 10, 0.7);
+}
+
+.mycard:hover {
+  transform: translateY(-10px);
+}
+
+.card {}
+
+.card,
+.mycard {
+  transform: translateY(0px);
+  box-shadow: 3px 3px 5px 0 rgba(0, 0, 0, 0.2);
+  transition: all ease 200ms;
+}
+
+.stats, .activeStats {
+  text-align: center;
+  padding: 5px;
+  font-weight: bold;
+}
+
+.stats {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.activeStats {
+  background-color: rgba(255, 255, 255, 0.75);
+}
+
+.ansage {
+  font-size: 0.9rem;
+  font-weight: normal;
+}
+
+.popUp {
+  display: block;
+  position: relative;
+  margin: auto;
+  width: fit-content;
+  padding: 35px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  background: rgba(200, 200, 200, 0.9);
+  z-Index=99;
+}
+
+.init, .vorbehaltWindow {
+  background: rgba(255, 255, 255, 0.8);
+  position: relative;
+  min-width: 300px;
+  min-height: 300px;
+  width: 50%;
+  height: 50%;
+  margin: 50px auto;
+  z-index: 99;
+}

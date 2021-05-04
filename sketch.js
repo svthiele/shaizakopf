@@ -8,7 +8,7 @@ var deckInitCount;
 
 const playerCount = 4;
 var players = [];
-const names = ["Lullu", "Biba", "Knabi", "Fuzzi"];
+const names = ["Fuzzi", "Lullu", "Biba", "Knabi"];
 var teams = [new Team(0), new Team(1)];
 var me = 0;
 
@@ -29,31 +29,26 @@ var cardBackImg;
 
 
 function setup() {
-  //createCanvas(window.innerWidth, window.innerHeight);
-  for (let i = 0; i < playerCount; i++) {
-    players.push(new Player(i, names[i]));
-  }
+  let initWindow = document.createElement('div');
+  initWindow.className = 'init';
+  initWindow.innerHTML = '<h1>Shaizakopf';
+  document.body.appendChild(initWindow);
 
-  createGUI();
-  newGame();
-}
-
-function draw() {
-    updateTable();
-    noLoop();
-}
-
-function windowResized() {
-  cardH = window.innerHeight / 6;
-  cardW = cardH * 0.8;
-  resizeCanvas(windowWidth, windowHeight);
-}
-
-function wrapIndex(i, i_max) {
-  i = i % i_max;
-  return (i < 0 ? i + i_max : i);
+  let startGame = document.createElement('BUTTON');
+  startGame.addEventListener('click', newGame);
+  startGame.innerHTML = 'Spiel Starten'
+  startGame.className = 'winbutton';
+  document.querySelector('.init').appendChild(startGame);
+  //updateTable();
 }
 
 function init() {
-  let initWindow = createDiv();
+  for (let i = 0; i < playerCount; i++) {
+    players.push(new Player(i, names[i]));
+  }
+  createGUI();
+  setup();
 }
+
+document.addEventListener('DOMContentLoaded', init);
+window.addEventListener('resize', debounce(updateTable, 100));
