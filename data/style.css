@@ -110,7 +110,8 @@ button:hover {
   min-width: 300px;
   min-height: 300px;
   width: 50%;
-  height: 50%;
+  height: fit-content;
   margin: 50px auto;
+  padding: 25px;
   z-index: 99;
 }

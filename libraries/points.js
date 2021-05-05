@@ -16,13 +16,11 @@ function pointsToWin(team) {
 function sonderPunkte(stich) {
   if (stich.points >= 40) {
     teams[players[stich.winner].team].sonderpunkte.push('DK');
-    //message += "Shaizakopf!<br>";
   }
 
   for (let i = 0; i < stich.count; i++) {
     if (stich.cards[i].fuchs && (players[stich.winner].team != players[stich.cards[i].player].team)) {
       teams[players[stich.winner].team].sonderpunkte.push('F');
-      //message += "Fuchhhs!<br>";
     }
   }
 
@@ -31,10 +29,8 @@ function sonderPunkte(stich) {
       if (stich.cards[i].karlchen) {
         if ((players[stich.winner].team != players[stich.cards[i].player].team)) {
           teams[players[stich.winner].team].sonderpunkte.push('KG');
-          //message += "Karlchen gefangen!<br>";
         } else if (stich.winner == stich.cards[i].player) {
           teams[players[stich.winner].team].sonderpunkte.push('KL');
-          //message += "Karlchen im letzten!<br>";
         }
       }
     }
@@ -103,54 +99,74 @@ function finalCount(winningTeam) {
     message += "30 bei schwarz abgesagt +1<br>";
   }
 
-  if (winningTeam == 1) { //gegen die Alten
-    gamePoints += 1;
-    message += "gegen die Alten +1<br>";
-  }
+  if (teams[0].players.length != 1) { // Nur wenn keine Solo gespielt wurde
+    if (winningTeam == 1) { //gegen die Alten
+      gamePoints += 1;
+      message += "gegen die Alten +1<br>";
+    }
 
-  for (let sonderPunkt of winners.sonderpunkte) {
-    if (sonderPunkt == 'F') {
-      gamePoints += 1;
-      message += "Fuchs gefangen +1<br>";
+    for (let sonderPunkt of winners.sonderpunkte) {
+      if (sonderPunkt == 'F') {
+        gamePoints += 1;
+        message += "Fuchs gefangen +1<br>";
+      }
+      if (sonderPunkt == 'DK') {
+        gamePoints += 1;
+        message += "Shaizakopf +1<br>";
+      }
+      if (sonderPunkt == 'KG') {
+        gamePoints += 1;
+        message += "Karlchen Gefangen +1<br>";
+      }
+      if (sonderPunkt == 'KL') {
+        gamePoints += 1;
+        message += "Karlchen im Letzten +1<br>";
+      }
     }
-    if (sonderPunkt == 'DK') {
-      gamePoints += 1;
-      message += "Shaizakopf +1<br>";
-    }
-    if (sonderPunkt == 'KG') {
-      gamePoints += 1;
-      message += "Karlchen Gefangen +1<br>";
-    }
-    if (sonderPunkt == 'KL') {
-      gamePoints += 1;
-      message += "Karlchen im Letzten +1<br>";
+
+    for (let sonderPunkt of losers.sonderpunkte) {
+      if (sonderPunkt == 'F') {
+        gamePoints -= 1;
+        message += "Fuchs gefangen -1<br>";
+      }
+      if (sonderPunkt == 'DK') {
+        gamePoints -= 1;
+        message += "Shaizakopf -1<br>";
+      }
+      if (sonderPunkt == 'KG') {
+        gamePoints -= 1;
+        message += "Karlchen Gefangen -1<br>";
+      }
+      if (sonderPunkt == 'KL') {
+        gamePoints -= 1;
+        message += "Karlchen im Letzten -1<br>";
+      }
     }
   }
-
-  for (let sonderPunkt of losers.sonderpunkte) {
-    if (sonderPunkt == 'F') {
-      gamePoints -= 1;
-      message += "Fuchs gefangen -1<br>";
-    }
-    if (sonderPunkt == 'DK') {
-      gamePoints -= 1;
-      message += "Shaizakopf -1<br>";
-    }
-    if (sonderPunkt == 'KG') {
-      gamePoints -= 1;
-      message += "Karlchen Gefangen -1<br>";
-    }
-    if (sonderPunkt == 'KL') {
-      gamePoints -= 1;
-      message += "Karlchen im Letzten -1<br>";
-    }
-  }
-
   message += "Gewinner erhalten: " + gamePoints;
 
   popUp(message);
 
-  return gamePoints
+  if (teams[0].players.length == 1) { // wenn Solist gewonnen
+    if (winners.team == 0) {
+      winners.players[0].gamePoints += gamePoints * 3;
+      for (let loser of losers.players) {
+        loser.gamePoints -= gamePoints;
+      }
+    } else {
+      losers.players[0].gamePoints -= gamePoints * 3;
+      for (let winner of winner.players) {
+        winner.gamePoints += gamePoints;
+      }
+    }
+  } else {
+    for (let loser of losers.players) {
+      loser.gamePoints -= gamePoints;
+    }
+    for (let winner of winners.players) {
+      winner.gamePoints += gamePoints;
+    }
+  }
 }
 
 function teamCount() {

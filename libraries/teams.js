@@ -1,8 +1,8 @@
 function getTeams() {
   for (let i = 0; i < playerCount; i++) {
     var re = false;
-    for (let j = 0; j < players[i].hand.cards.length; j++) {
-      if (players[i].hand.cards[j].krDame) {
+    for (let chkCard of players[i].hand.cards) {
+      if (chkCard.krDame) {
         re = true;
       }
     }
@@ -15,16 +15,8 @@ function getTeams() {
     }
   }
 
-  ansageButton.style.display = 'block';
-  if (players[me].team == 0) {
-    ansageButton.innerHTML = "Re";
-  } else {
-    ansageButton.innerHTML = "Kontra";
-  }
-
   if (teams[0].players.length < 2) {
     hochzeit = true;
-    console.log("Hochzeit!");
   }
 }
 

@@ -17,7 +17,7 @@ function ansageUpdate() {
   }
 }
 
-function createGUI() {
+function createAnsageButton() {
   ansageButton = document.createElement('BUTTON');
   document.body.appendChild(ansageButton);
   ansageButton.style.position = 'absolute';
@@ -28,6 +28,12 @@ function createGUI() {
   ansageButton.addEventListener('click', function() {
     ansageMachen(players[me]);
   });
+
+  if (players[me].team == 0) {
+    ansageButton.innerHTML = "Re";
+  } else {
+    ansageButton.innerHTML = "Kontra";
+  }
 }
 
 function popUp(message) {

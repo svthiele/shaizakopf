@@ -28,7 +28,7 @@ var cardW = cardH * 0.8;
 var cardBackImg;
 
 
-function setup() {
+function startGame() {
   let initWindow = document.createElement('div');
   initWindow.className = 'init';
   initWindow.innerHTML = '<h1>Shaizakopf';
@@ -45,9 +45,9 @@ function setup() {
 function init() {
   for (let i = 0; i < playerCount; i++) {
     players.push(new Player(i, names[i]));
+    players[i].showStats();
   }
-  createGUI();
-  setup();
+  startGame();
 }
 
 document.addEventListener('DOMContentLoaded', init);

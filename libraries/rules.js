@@ -6,9 +6,10 @@ function newGame() {
   deck.shuffle();
   deck.deal();
 
-  for (let i = 0; i < players.length; i++) {
-    player = players[i];
+  for (let player of players) {
     player.hand.sort(sort);
+    player.display();
+    player.showStats();
   }
 
   getTeams()
@@ -16,7 +17,6 @@ function newGame() {
   whoseturn = dealer + 1;
   document.querySelector('.init').remove();
   vorbehalte();
-  updateTable();
 }
 
 function gameOver() {
@@ -43,7 +43,7 @@ function gameOver() {
     winningTeam = 1;
   }
 
-  //popUp(message)
+  popUp(message)
 
   for (let player of players) {
     for (let stich of player.stiche) {

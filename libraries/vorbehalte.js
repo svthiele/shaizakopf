@@ -21,30 +21,50 @@ async function vorbehalte() {
     }
   }
 
-  if (spiel.charAt(0) == 'S') { // Solo wird gespielt
-    let soloString = soliLabel[soli.indexOf(spiel)];
-    popUp(players[solist].name + ' spielt ein ' + soloString);
 
-    trumpIndex = eval('trumpIndexList.' + spiel);
-    sort = eval('sort' + spiel);
+  switch (spiel.charAt(0)) {
+    case 'S': // Solo wird gespielt
 
-    teams[0].players = [players[solist]];
-    teams[1].players = [];
-    for (let i = 0; i < playerCount - 1; i++) {
-      teams[1].players.push(players[wrapIndex(player + 1 + i, playerCount)]);
-    }
-  } else if (spiel.charAt(0) == 'H') { // Solo wird gespielt
-    let soloString = soliLabel[soli.indexOf(spiel)];
-    popUp(players[solist].name + ' spielt eine Hochzeit');
-    hochzeitVorbehalt = true;
+      let soloString = soliLabel[soli.indexOf(spiel)];
+      popUp(players[solist].name + ' spielt ein ' + soloString);
+
+      trumpIndex = eval('trumpIndexList.' + spiel);
+      sort = eval('sort' + spiel);
+
+      teams[0].players = [players[solist]];
+      teams[1].players = [];
+      for (let i = 0; i < playerCount - 1; i++) {
+        teams[1].players.push(players[wrapIndex(solist + 1 + i, playerCount)]);
+      }
+      whoseturn = solist;
+
+      break;
+
+    case 'H': // Hochzeit wird gespielt
+
+      popUp(players[solist].name + ' spielt eine Hochzeit');
+      hochzeitVorbehalt = true;
+      break;
+
+    case 'A': // Armut angemeldet
+
+      popUp(players[solist].name + ' hat Armut angemeldet');
+      armut();
+      break;
+
+    default:
+
+      popUp('Normalspiel');
+
+      break;
   }
 
   for (let player of players) {
     player.hand.sort(sort);
   }
 
+  createAnsageButton();
   updateTable();
-  //remove transition from mycards css class
 }
 
 function vorbehaltWindow(player) {
@@ -114,6 +134,7 @@ function vorbehaltWindow(player) {
     keinVorbehalt.className = 'winbutton';
     keinVorbehalt.addEventListener('click', e => {
       vorbehaltDiv.remove();
+      players[player].stats.innerHTML += '<br>Gesund';
       result.vorbehalt = '';
       result.player = player;
       resolve(result);
@@ -121,4 +142,8 @@ function vorbehaltWindow(player) {
     vorbehaltDiv.appendChild(keinVorbehalt);
 
   })
+}
+
+function armut() {
+
 }
